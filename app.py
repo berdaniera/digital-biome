@@ -8,7 +8,6 @@ from sunrise_sunset import SunriseSunset as suns
 from datetime import datetime, timedelta
 import simplejson as json
 import pandas as pd
-from collections import OrderedDict
 import regex as re
 import tempfile
 import zipfile
