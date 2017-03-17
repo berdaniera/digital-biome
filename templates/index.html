@@ -1,0 +1,21 @@
+{% extends "indexlayout.html" %}
+
+{% block body %}
+<div class="col-md-8">
+<h2>Earth and environmental data management, simplified.</h2>
+<p class="lead">Your data are the core of your research. We help you move from data collection to data analysis faster. Digital Biome gives you cloud hosting and data integration, visualization and cleaning tools, and shared analysis workflows. <b>Get invited to be a beta tester today:</b></p>
+  <script type="text/javascript">var submitted=false;</script>
+  <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(submitted) {window.location='#'; document.getElementById('formemail').disabled='disabled';  $('#forme1').addClass('disabled');}"></iframe>
+  <form action="https://docs.google.com/forms/d/e/1FAIpQLSeztuRvYXY4NX222kGFXIPulzp2DoDftOMuVoAhZV5YHC4oLQ/formResponse?embedded=true" method="post" target="hidden_iframe" onsubmit="submitted=true;">
+  <div class="input-group input-group-lg">
+    <input type="text" id="formemail" name="entry.1535142446" class="form-control" placeholder="Enter your email address">
+    <span class="input-group-btn">
+      <button class="btn btn-default" id="forme1" type="submit"><font style="color:#2C3E50;font-weight:bold;"><span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span> Get Started</font></button>
+    </span>
+  </div><!-- /input-group -->
+  </form>
+  <br><br>
+  <a href="/admin" class="btn btn-success btn-lg">Try a Demo <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span></a>
+</div>
+
+{% endblock %}

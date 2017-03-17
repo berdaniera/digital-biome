@@ -1,0 +1,148 @@
+{% extends "layout.html" %}
+
+{% block alert %}
+<div class="alert alert-dismissible alert-info">
+  <button class="close" data-dismiss="alert" aria-label="close">&times;</button>
+  <p>Preview timeseries graphs here. Additional features include:<ul>
+    <li>displaying local night-time with shading on the graph</li>
+    <li>showing back-fill variables on each panel to examine correlations</li>
+  </ul></p>
+</div>
+{% endblock %}
+
+{% block body %}
+<div class="row"><div class="col-md-12">
+  <h1>Graph</h1>
+  <p class="lead">Instructions</p><hr>
+</div></div>
+
+<div class="row"><div class="col-md-6 col-md-offset-3">
+  <form id="viz">
+    <div>
+      Choose a project:
+      <select class="form-control" id="project" name="project">
+        {% for p in projects %}
+        <option value="{{p}}">{{p}}</option>
+        {% endfor %}
+      </select>
+        <br>
+      Choose a site:
+      <select class="form-control" id="site" name="site">
+        {% for s in sites[projects[0]] %}
+          <option value="{{s}}">{{s}}</option>
+        {% endfor %}
+      </select>
+        <br>
+      Choose dates:<br>
+      <input class="form-control" type="text" id="datepicker" name="daterange" value="" placeholder="Select date range">
+        <br>
+      Select variables:<br>
+      <div id="allvariables">
+        {% for c in columns[projects[0]] %}
+          <input type="checkbox" id="variables" value="{{c}}" checked> {{c}}<br>
+        {% endfor %}
+      </div>
+        <br>
+      <button name="vizsubmit" class="btn btn-primary btn-block">Graph</button>
+    </div>
+  </form>
+</div></div>
+
+<hr>
+
+<div id="graphcontrol" class="text-right">
+  <div class="form-inline">
+  Show local night-time: <input type="checkbox" id="shownight" value="yes" checked> &nbsp;
+  Backfill area variable: <select class="form-control" id="backgraphlist" name="backgraphlist"></select>
+  </div>
+</div>
+
+<div id="graphs"></div>
+
+<script src="static/js/graphs.js"></script>
+
+<script>
+
+var sites = {{sites|tojson}}
+var dates = {{dates|tojson}}
+var columns = {{columns|tojson}}
+
+$("#project").change(function(){
+  // populate site list
+  var site = sites[this.value]
+  $('#site')
+    .find('option')
+    .remove()
+    .end();
+  $.map( site, function(s){
+    $("#site").append('<option value="'+s+'">'+s+'</option>');
+  });
+});
+$('#graphcontrol').hide();
+
+var sitedates = dates[$('#project').val()];
+$('#datepicker').daterangepicker({
+  locale: {format: 'YYYY-MM-DD', separator: ' to '},
+  startDate: sitedates[0],
+  endDate: sitedates[1],
+  minDate: sitedates[0],
+  maxDate: sitedates[1],
+  autoApply: true,
+  opens: 'left'
+});
+
+$("#site").change(function(){
+  var sitedates = dates[$('#project').val()];
+  $('#datepicker').daterangepicker({
+    locale: {format: 'YYYY-MM-DD', separator: ' to '},
+    startDate: sitedates[0],
+    endDate: sitedates[1],
+    minDate: sitedates[0],
+    maxDate: sitedates[1],
+    autoApply: true,
+    opens: 'left'
+  });
+  $("#allvariables").empty();
+  $.map(columns[$('#project').val()], function(c){
+    $("#allvariables").append('<input type="checkbox" id="variables" value="'+c+'" checked> '+c+'<br>');
+  });
+});
+
+$(function(){
+  $("button[name=vizsubmit]").click(function(){
+    var dat = {}
+    dat['project'] = $('#project').val();
+    dat['site'] = $('#site').val();
+    dat['startDate'] = $("#datepicker").data('daterangepicker').startDate.format('YYYY-MM-DD');//$('#startDate').datepicker().val();
+    dat['endDate'] = $("#datepicker").data('daterangepicker').endDate.format('YYYY-MM-DD');//$('#endDate').datepicker().val();
+    dat['columns'] = $('#variables:checked').map(function() { return this.value; }).get();
+    $.ajax({
+      type: 'POST',
+      url:'/_getviz',
+      data: JSON.stringify(dat),
+      contentType: 'application/json;charset=UTF-8',
+      success: function(response){
+        $("#graphs").empty();
+        console.log("success")
+        // $('#graphcontrol').show();
+        data = response.dat;
+        variables = response.variables;
+        flags = [];
+        // sundat = JSON.parse(response.sunriseset);
+        // sundat.forEach(function(d){
+        //   d.rise = parseDate(d.rise);
+        //   d.set = parseDate(d.set);
+        // });
+        // flags = JSON.parse(response.flagdat);
+        Plots(variables, data, flags, "viz");
+        // if($("#shownight").is(":checked")) { Sunlight(variables, sundat) };
+      },
+      error: function(error){ console.log(error); }
+    });
+    return false;
+  })
+});
+
+</script>
+
+{% endblock %}

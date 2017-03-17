@@ -1,0 +1,313 @@
+{% extends "layout.html" %}
+
+{% block alert %}
+<div class="alert alert-dismissible alert-info">
+  <button class="close" data-dismiss="alert" aria-label="close">&times;</button>
+  <p>Private users with permissions can add data flags from this interface. Additional features include:<ul>
+    <li>displaying local night-time with shading on the graph</li>
+    <li>showing back-fill variables on each panel to easily identify problems</li>
+  </ul>
+We are also developing an anomaly recommendation engine based on your previously-flagged data and gap-filling algorithms.</p>
+</div>
+{% endblock %}
+
+{% block body %}
+<div class="row"><div class="col-md-12">
+  <h1>Clean</h1>
+  <p class="lead">Instructions</p><hr>
+</div></div>
+
+<div class="row"><div class="col-md-6 col-md-offset-3">
+  <form id="viz">
+    <div>
+      Choose a project:
+      <select class="form-control" id="project" name="project">
+        {% for p in projects %}
+        <option value="{{p}}">{{p}}</option>
+        {% endfor %}
+      </select>
+        <br>
+      Choose a site:
+      <select class="form-control" id="site" name="site">
+        {% for s in sites[projects[0]] %}
+          <option value="{{s}}">{{s}}</option>
+        {% endfor %}
+      </select>
+        <br>
+      <button name="cleansubmit" class="btn btn-primary btn-block">Clean</button>
+    </div>
+  </form>
+</div></div>
+
+<hr>
+
+<div class="row" id="flagging">
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading"><span class="lead">Options</span> &ndash; settings for the cleaning application</div>
+      <div class="panel-body">
+        <div class="form-inline">
+        Show local night-time: <input type="checkbox" id="shownight" value="yes" checked> &nbsp;
+        Backfill area variable: <select class="form-control" id="backgraphlist" name="backgraphlist"></select>
+        <br><br>
+        <button class="btn btn-danger" type="button" id="addna" disabled>Set NA</button>
+        <button class="btn btn-primary" type="button" id="zoomin">Zoom in to selected region</button>
+        <button class="btn btn-link" type="button" id="zoomreset">Reset zoom</button><br>
+        <p class="text-small text-muted">Note: Set NA only affects the data points you highlight.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading"><span class="lead">Flags</span> &ndash; data that should be noted as a concern (sensor failure, fouling, etc.)</div>
+      <div class="panel-body">
+        <p class="text-small text-muted">Note: Flagging affects all variables at a given timestamp.</p>
+        <select id="flags" placeholder="Choose (or enter) a flag ID (alphanumeric with no spaces please)" name="flagID">
+          <option value="">Choose (or enter) a flag ID</option>
+          {% for f in flags %}
+          <option value="{{f}}">{{f}}</option>
+          {% endfor %}
+        </select>
+        <input type="text" name="fcomment" class="form-control" placeholder="Add comments (optional)">
+        <button class="btn btn-warning btn-block" type="button" id="addflag">Flag selected</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6 text-left"><button class="btn btn-link" type="button" id="panback"><< Previous four weeks</button></div>
+  <div class="col-md-6 text-right"><button class="btn btn-link" type="button" id="panforward">Next four weeks >></button></div>
+</div>
+
+</div>
+
+
+<div class="row" id="graphs"></div>
+
+
+<script src="static/js/graphs.js"></script>
+
+<script>
+
+var sites = {{sites|tojson}}
+var columns = {{columns|tojson}}
+
+$('#flags').selectize({
+    delimiter: ',',
+    persist: false,
+    create: function(input) { return {value: input,text: input} }
+});
+
+
+$("#project").change(function(){
+  // populate site list
+  var site = sites[this.value]
+  $('#site')
+    .find('option')
+    .remove()
+    .end();
+  $.map( site, function(s){
+    $("#site").append('<option value="'+s+'">'+s+'</option>');
+  });
+});
+$('#graphcontrol').hide();
+
+var plotdates;
+var alldata;
+var alldatna;
+var plotstart;
+var plotend;
+
+function getdisplaydata(start, end, dat){
+  stdt = Date.parse(start)
+  endt = Date.parse(end)
+  pltdat = $(dat).filter(function(i,n){
+    return Date.parse(n.datetime)>stdt && Date.parse(n.datetime)<endt
+  })
+  return $.makeArray(pltdat)
+}
+
+$(function(){
+  $("button[name=cleansubmit]").click(function(){
+    var dat = {}
+    dat['project'] = $('#project').val();
+    dat['site'] = $('#site').val();
+    $.ajax({
+      type: 'POST',
+      url:'/_getqaqc',
+      data: JSON.stringify(dat),
+      contentType: 'application/json;charset=UTF-8',
+      success: function(response){
+        $("#graphs").empty();
+        plotdates = response.plotdates; // get plot date list in
+        alldata = response.dat;
+        plotstart = plotdates[1];
+        plotend = plotdates[0];
+        data = getdisplaydata(plotstart,plotend,alldata);
+        variables = response.variables;
+        sundat = JSON.parse(response.sunriseset);
+        sundat.forEach(function(d){
+          d.rise = parseDateFull(d.rise);
+          d.set = parseDateFull(d.set);
+        });
+        flags = response.flagdat;
+        Plots(variables, data, flags, "qaqc");
+        if($("#shownight").is(":checked")) { Sunlight(variables, sundat) };
+        $('#flagging').show();
+        $('#backgraphlist')
+            .find('option')
+            .remove()
+            .end()
+            .append('<option value="None" selected>None</option>');
+        for (var i = 0; i < response.variables.length; ++i) {
+            $('#backgraphlist').append('<option value="'+response.variables[i]+'">'+response.variables[i]+'</option>');
+        }
+      },
+      error: function(error){
+        console.log(error);
+      }
+    });
+    return false;
+  })
+});
+
+$(function(){
+  $("#zoomin").click(function(){
+    redrawPoints(zoom_in = true, sbrush=selectedBrush, reset=false)
+  });
+})
+
+$(function(){
+  $("#zoomreset").click(function(){
+    redrawPoints(zoom_in = true, sbrush=selectedBrush, reset=true)
+  });
+})
+
+$(function(){
+  $("#panback").click(function(){
+    if(plotstart!=plotdates.slice(-1)[0]){
+      // if the start date is not the last date in the list
+      plotend = plotstart;
+      plotstart = plotdates[plotdates.indexOf(plotstart)+1];
+      if(datna != null){
+        data = getdisplaydata(plotstart,plotend,alldatna);
+      }else{
+        data = getdisplaydata(plotstart,plotend,alldata);
+      }
+      $("#graphs").empty();
+      Plots(variables, data, flags, "qaqc");
+      if($("#shownight").is(":checked")) { Sunlight(variables, sundat) };
+    }
+  });
+})
+
+$(function(){
+  $("#panforward").click(function(){
+    if(plotend!=plotdates[0]){
+      // if the end date is not the first date in the list
+      plotstart = plotend;
+      plotend = plotdates[plotdates.indexOf(plotend)-1];
+      if(datna != null){
+        data = getdisplaydata(plotstart,plotend,alldatna);
+      }else{
+        data = getdisplaydata(plotstart,plotend,alldata);
+      }
+      $("#graphs").empty();
+      Plots(variables, data, flags, "qaqc");
+      if($("#shownight").is(":checked")) { Sunlight(variables, sundat) };
+    }
+  });
+})
+
+function alertbox(alrt,msg){
+  return '<div class="alert alert-dismissible alert-'+alrt+'">\
+    <button class="close" data-dismiss="alert" aria-label="close">&times;</button>\
+    '+msg+'</div>'
+}
+
+
+$(function(){
+  $("#addna").click(function(){
+    if (undefined != selectedBrush){ // only do this if there is a brush selected
+      s = d3.brushSelection(d3.select("#"+selectedBrush).node())
+      dat = {}
+      dat['project'] = $('#project').val();
+      dat['site'] = $('#site').val();
+      dat['startDate'] = x.invert(s[0]);
+      dat['endDate'] = x.invert(s[1]);
+      dat['var'] = selectedBrush;
+      // $.ajax({
+      //   type: 'POST',
+      //   url:'/_addna',
+      //   data: JSON.stringify(dat),
+      //   contentType: 'application/json;charset=UTF-8',
+      //   success: function(response){
+      //     console.log("success")
+      //     $("#alerts").append(alertbox('success','Added NA values.'))
+      //     alldatna = response.dat;
+      //     datna = getdisplaydata(plotstart,plotend,alldatna);
+      //     redrawPoints(zoom_in=false, sbrush=selectedBrush, reset=false)
+      //   },
+      //   error: function(error){
+      //     console.log(error);
+      //   }
+      // });
+      return false;
+    }else{
+      $("#alerts").append(alertbox('warning','Please select values to add NAs.'))
+    }
+  });
+})
+
+$(function(){
+  $("#addflag").click(function(){
+    if (undefined != selectedBrush){ // only do this if there is a brush selected
+      s = d3.brushSelection(d3.select("#"+selectedBrush).node())
+      dat = {}
+      dat['project'] = $('#project').val();
+      dat['site'] = $('#site').val();
+      dat['startDate'] = x.invert(s[0]);
+      dat['endDate'] = x.invert(s[1]);
+      if(brushdown){ // always true
+        dat['var'] = variables;
+        d3.selectAll("svg").selectAll(".selected").classed("highlighted", function(d) {
+          is_brushed = dat['startDate'] <= d.date && d.date <= dat['endDate'];
+          return is_brushed;
+        });
+      }else{
+        dat['var'] = [selectedBrush];
+        d3.select("."+selectedBrush).selectAll(".selected").classed("highlighted", function(d) {
+          is_brushed = dat['startDate'] <= d.date && d.date <= dat['endDate'];
+          return is_brushed;
+        });
+      }
+      dat['flagid'] = $("select[name=flagID]").val();
+      dat['comment'] = $("input[name=fcomment]").val();
+      // $.ajax({
+      //   type: 'POST',
+      //   url:'/_addflag',
+      //   data: JSON.stringify(dat),
+      //   contentType: 'application/json;charset=UTF-8',
+      //   success: function(response){
+      //     console.log("success")
+      //     $("#alerts").append(alertbox('success','Added flag.'))
+      //   },
+      //   error: function(error){
+      //     console.log(error);
+      //   }
+      // });
+      return false;
+    }else{
+      $("#alerts").append(alertbox('warning','Please select values to add Flags.'))
+    }
+  })
+});
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends "layout.html" %}
+
+{% block alert %}
+<div class="alert alert-dismissible alert-info">
+  <button class="close" data-dismiss="alert" aria-label="close">&times;</button>
+  <form action="https://docs.google.com/forms/d/e/1FAIpQLSeztuRvYXY4NX222kGFXIPulzp2DoDftOMuVoAhZV5YHC4oLQ/formResponse?embedded=true" method="post" target="hidden_iframe" onsubmit="submitted=true;">
+  <strong>Welcome to the Digital Biome demo tour!</strong>
+  Browse around and try out some of our features and then sign up to be a beta tester: <span class="form-inline">
+  <input type="text" id="formemail" name="entry.1535142446" class="form-control input-sm" placeholder="Email address">
+  <button class="btn btn-sm" id="forme1" type="submit">Get started</button></span><br>
+  Are there features that you want to have but don't see here? Send us a note: <a href="mailto:hello@digitalbiome.io">hello@dibitalbiome.io</a></form><br>
+
+  <p>Administrative features restricted to those with permissions include:<ul>
+    <li>add/remove projects and sites</li>
+    <li>add/invite users</li>
+    <li>access your originally-uploaded files (backup)</li>
+  </ul></p>
+</div>
+{% endblock %}
+
+
+{% block body %}
+
+<div class="row"><div class="col-md-12">
+  <h1>Admin</h1>
+  <p class="lead">This is the admin page, where administrative users can manage projects, sites, and other users.</p>
+</div></div>
+
+<div class="row">
+  <div class="col-md-6">
+    <h2>Existing projects:</h2>
+    <p class="text-muted">(Click to view original files)<br>
+    {% if projects|length > 0 %}
+      {% for p in projects %}
+        <button data-toggle="collapse" class="btn btn-link" data-target="#files-{{p}}">{{p}}</button>
+        <div id="files-{{p}}" class="collapse well">
+          {% for f in files[p] %}
+          <a href="/archivefiles/{{f}}">{{f}}</a><br>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="text-muted"><em>No projects yet.</em></p>
+    {% endif %}
+    </p>
+  </div>
+  <div class="col-md-6">
+    <h2>Existing sites:</h2>
+    {% if allsites|length > 0 %}
+    <ul>
+      {% for s in allsites %}
+        <li>{{s}}</li>
+      {% endfor %}
+    </ul>
+    {% else %}
+      <p class="text-muted"><em>No sites yet.</em></p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="row">
+<div class="col-md-6">
+  <button data-toggle="collapse" class="btn btn-default" data-target="#addproject">Add projects</button>
+  <br><br>
+  <div id="addproject" class="collapse well">
+    <form id="projectform" action="" method=post>
+      <input type="hidden" name="formid" value="addproj">
+      <p class='lead'>1. Project name:</p>
+      <input type="text" class="form-control" name="project" maxlength="50" placeholder="Something you'll recognize when uploading data...">
+      <small class="form-text text-muted">Note: we will automatically strip punctuation, replace spaces with dashes, and convert to lower case.</small><br><br>
+      <p class='lead'>2. Description:</p>
+      <textarea class="form-control" rows="5" name="description" placeholder="Metadata, project goals, etc. Anything that you want to share with people when they download the data."></textarea>
+      <br>
+      <button class="btn btn-primary btn-block" name="submit" type="submit" disabled>Add project</button>
+    </form>
+  </div>
+</div>
+
+<div class="col-md-6">
+  <button data-toggle="collapse" class="btn btn-default" data-target="#addsite">Add sites</button>
+  <br><br>
+  <div id="addsite" class="collapse well">
+    <form id="siteform" action="" method=post>
+      <input type="hidden" name="formid" value="addsite">
+      <p class='lead'>1. Site name:</p>
+      <input type="text" class="form-control" name="site" maxlength="50" placeholder="Something you'll recognize when uploading data...">
+      <small class="form-text text-muted">Note: we will automatically strip punctuation, replace spaces with dashes, and convert to lower case.</small><br><br>
+      <p class='lead'>2. Coordinates, decimal degrees:</p>
+      <p>Latitude (N/S)</p><input type="text" class="form-control" name="lat" placeholder="e.g., 36.000"><br>
+      <p>Longitude (E/W)</p><input type="text" class="form-control" name="lng" placeholder="e.g., -78.970"><br>
+      <p class='lead'>3. Description:</p>
+      <textarea class="form-control" rows="5" name="description" placeholder="Site characteristics, instruments, etc. Anything that you want to share with people when they download the data."></textarea>
+      <br>
+      <button class="btn btn-primary btn-block" name="submit" type="submit" disabled>Add site</button>
+    </form>
+  </div>
+</div></div>
+
+<script>
+// function alertbox(alrt,msg){
+//   return '<div class="alert alert-dismissible alert-'+alrt+'">\
+//     <button class="close" data-dismiss="alert" aria-label="close">&times;</button>\
+//     '+msg+'</div>'
+// }
+//
+// $("#alerts").append(alertbox('info',
+//   '<form action="https://docs.google.com/forms/d/e/1FAIpQLSeztuRvYXY4NX222kGFXIPulzp2DoDftOMuVoAhZV5YHC4oLQ/formResponse?embedded=true" method="post" target="hidden_iframe" onsubmit="submitted=true;"> \
+//   <strong>Welcome to the Digital Biome demo tour!</strong> \
+//   Browse around and try out some of our features and then sign up to be a beta tester: <span class="form-inline"> \
+//   <input type="text" id="formemail" name="entry.1535142446" class="form-control input-sm" placeholder="Email address"> \
+//   <button class="btn btn-sm" id="forme1" type="submit">Get started</button></span><br>\
+//   Are there features that you want to have but don\'t see here? Send us a note: <a href="mailto:hello@digitalbiome.io">hello@dibitalbiome.io</a></form>'))
+</script>
+
+
+{% endblock %}

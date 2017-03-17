@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block alert %}
+<div class="alert alert-dismissible alert-info">
+  <button class="close" data-dismiss="alert" aria-label="close">&times;</button>
+  <p>All of your original files are archived and accessible through the admin panel. Data are stored in your own private database. Uploaded data files can include any columns and data types.</p>
+  <p>We are prototyping a file upload template system to wrangle different file formats (e.g., Campbell Scientific datalogger files). Until it is ready, files need to have 1) one header row with column names (ideally without spaces or punctuation), and 2) a first column with a date-time string in UTC standard and ISO format ('%Y-%m-%dT%H:%M:%SZ').</p>
+  <p>Additional features include:<ul>
+    <li>training on converting date-time strings in any language (R, Python, Matlab, Excel)</li>
+    <li>upload templates for different file and date-time formats</li>
+  </ul></p>
+</div>
+{% endblock %}
+
+{% block body %}
+<div class="row"><div class="col-md-12">
+  <h1>Upload Data</h1>
+  <p class="lead">Instructions</p><hr>
+</div></div>
+
+<div class="row"><div class="col-md-6 col-md-offset-3">
+
+  {% if projects|length==0 %}
+  <p>No projects created yet, please <a href="/admin">add one</a>.</p>
+  {% elif allsites|length==0 %}
+  <p>No sites created yet, please <a href="/admin">add one</a>.</p>
+  {% else %}
+  <form action="" method=post enctype=multipart/form-data>
+    Choose a project:
+    <select class="form-control" id="project" name="project">
+      {% for p in projects %}
+      <option value="{{p}}">{{p}}</option>
+      {% endfor %}
+    </select>
+      <br>
+    Choose a site:
+    <select class="form-control" id="site" name="site">
+      {% for s in allsites %}
+        <option value="{{s}}">{{s}}</option>
+      {% endfor %}
+    </select>
+      <br>
+    <div class="form-group">
+      <input type="file" class="form-control-file" name=file aria-describedby="fileHelp" multiple>
+      <small id="fileHelp" class="form-text text-muted">Select files to upload, including .csv, .dat, .txt.</small>
+    </div>
+    <button type="submit" value=Upload class="btn btn-primary btn-block" disabled>Upload</button>
+    <small class="form-text text-muted">This button would be enabled in a live setting.</small>
+  </form>
+  {% endif %}
+</div></div>
+
+{% endblock %}

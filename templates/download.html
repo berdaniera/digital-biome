@@ -1,0 +1,136 @@
+{% extends "layout.html" %}
+
+{% block alert %}
+<div class="alert alert-dismissible alert-info">
+  <button class="close" data-dismiss="alert" aria-label="close">&times;</button>
+  <p>Data downloads produce a zip file with json metadata and a csv data file. Logged-in users will be able to access private data too.
+    Additional features include aggregation at different timescales and we are developing features to download multiple sites at once and merge data from multiple projects.
+  </p>
+</div>
+{% endblock %}
+
+{% block body %}
+<div class="row"><div class="col-md-12">
+  <h1>Download</h1>
+  <p class="lead">Instructions</p><hr>
+</div></div>
+
+<div class="row"><div class="col-md-6 col-md-offset-3">
+
+  <form id="dnld" method=post action="/_getzip">
+    <div id="dnldform">
+      <input type="hidden" name="startDate" value="">
+      <input type="hidden" name="endDate" value="">
+      <input type="hidden" name="variables" value="">
+      Choose a project:
+      <select class="form-control" id="project" name="project">
+        {% for p in projects %}
+        <option value="{{p}}">{{p}}</option>
+        {% endfor %}
+      </select>
+        <br>
+      Choose a site:
+      <select class="form-control" id="site" name="site">
+        {% for s in sites[projects[0]] %}
+          <option value="{{s}}">{{s}}</option>
+        {% endfor %}
+      </select>
+        <br>
+      Choose dates:<br>
+      <input class="form-control" type="text" id="datepicker" name="daterange" value="" placeholder="Select date range">
+        <br>
+      Select variables:<br>
+      <div id="allvariables">
+        {% for c in columns[projects[0]] %}
+          <input type="checkbox" id="variables" value="{{c}}" checked> {{c}}<br>
+        {% endfor %}
+      </div>
+        <br>
+      <button id="dnldit" name="dnldsubmit" class="btn btn-primary btn-block">Download</button>
+    </div>
+  </form>
+</div></div>
+
+
+
+<script>
+
+var sites = {{sites|tojson}}
+var dates = {{dates|tojson}}
+var columns = {{columns|tojson}}
+
+$("#project").change(function(){
+  // populate site list
+  var site = sites[this.value]
+  $('#site')
+    .find('option')
+    .remove()
+    .end();
+  $.map( site, function(s){
+    $("#site").append('<option value="'+s+'">'+s+'</option>');
+  });
+});
+
+var sitedates = dates[$('#project').val()];
+$('#datepicker').daterangepicker({
+  locale: {format: 'YYYY-MM-DD', separator: ' to '},
+  startDate: sitedates[0],
+  endDate: sitedates[1],
+  minDate: sitedates[0],
+  maxDate: sitedates[1],
+  autoApply: true,
+  opens: 'left'
+});
+
+$("#site").change(function(){
+  var sitedates = dates[$('#project').val()];
+  $('#datepicker').daterangepicker({
+    locale: {format: 'YYYY-MM-DD', separator: ' to '},
+    startDate: sitedates[0],
+    endDate: sitedates[1],
+    minDate: sitedates[0],
+    maxDate: sitedates[1],
+    autoApply: true,
+    opens: 'left'
+  });
+  $("#allvariables").empty();
+  $.map(columns[$('#project').val()], function(c){
+    $("#allvariables").append('<input type="checkbox" id="variables" value="'+c+'" checked> '+c+'<br>');
+  });
+});
+
+
+$(function(){
+  $("#dnldit").click(function(){
+    $('#dnldform input[name=variables]').val( $('#variables:checked').map(function() { return this.value; }).get() );
+    $('#dnldform input[name=startDate]').val( $("#datepicker").data('daterangepicker').startDate.format('YYYY-MM-DD') );
+    $('#dnldform input[name=endDate]').val( $("#datepicker").data('daterangepicker').endDate.format('YYYY-MM-DD') );
+  })
+});
+
+
+// $(function(){
+//   $("button[name=dnldsubmit]").click(function(){
+//     var dat = {}
+//     // dat['project'] = $('#project').val();
+//     // dat['site'] = $('#site').val();
+//     dat['startDate'] = $("#datepicker").data('daterangepicker').startDate.format('YYYY-MM-DD');//$('#startDate').datepicker().val();
+//     dat['endDate'] = $("#datepicker").data('daterangepicker').endDate.format('YYYY-MM-DD');//$('#endDate').datepicker().val();
+//     dat['columns'] = $('#variables:checked').map(function() { return this.value; }).get();
+//     $.ajax({
+//       type: 'POST',
+//       url:'/_getzip',
+//       data: JSON.stringify(dat),
+//       contentType: 'application/json;charset=UTF-8',
+//       success: function(response){
+//         console.log('success');
+//       },
+//       error: function(error){ console.log(error); }
+//     });
+//     return false;
+//   })
+// });
+
+</script>
+
+{% endblock %}
