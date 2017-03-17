@@ -16,9 +16,6 @@ import shutil
 import os
 
 app = Flask(__name__)
-app.config['MONGO_DBNAME'] = 'demogdb'
-app.config['UPLOAD_FOLDER'] = 'testfolder'
-app.config['SECRET_KEY'] = 'digital_biome'
 mongo = PyMongo(app)
 
 ############ FUNCTIONS
