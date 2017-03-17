@@ -1,6 +1,7 @@
 *.zip
 *.csv
 *.txt
+*.dat
 config*
 *.pyc
 testfolder/
