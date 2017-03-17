@@ -2,4 +2,5 @@
 *.csv
 *.txt
 config*
+*.pyc
 testfolder/
