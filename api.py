@@ -54,11 +54,21 @@ def get_account(account_id):
     return jsonify("Success! Get APIin'!")
 
 # Add options for api_key in the query, not just the header...
+def get_key():
+    key = request.headers.get('Authorization',None)
+    if key is not None:
+        key = key.split(" ")[1]
+    else:
+        key = request.args.get('key',None)
+    return key
+
 
 @app.route('/v1/<account_id>/data', methods=['GET'])
 def check_data(account_id):
     # if GET, get list of data_id, variables, nrows, creation date, metadata
-    key = request.headers.get('Authorization').split(" ")[1]
+    #key = request.headers.get('Authorization').split(" ")[1]
+    key = get_key()
+
     user = mongo.db.users.find_one({'account_id':account_id, 'key':key})
     if user is None:
         abort(400)
@@ -111,7 +121,14 @@ def query_data(account_id, data_id):
     # check credentials
     dataset = mongo.db.datasets.find_one({'account_id':account_id, 'data_id':data_id})
     if dataset['private']: # if private is true, check credentials
-        key = request.headers.get('Authorization').split(" ")[1]
+        # key = request.headers.get('Authorization',None)
+        # if key is not None:
+        #     key = key.split(" ")[1]
+        # else:
+        #     key = request.args.get('key',None)
+        key = get_key()
+        if key is None:
+            return jsonify(error="Please supply an api key.")
         user = mongo.db.users.find_one({'account_id':account_id, 'key':key})
         if user is None or data_id not in user['data_ids']:
             return jsonify(error="Your authorization key is invalid for this data.")
