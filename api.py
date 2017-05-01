@@ -13,15 +13,6 @@ mongo = PyMongo(app) # main
 mongo2 = PyMongo(app, config_prefix='MONGO2') # data
 Compress(app)
 
-# mongo.db.users
-# - {name, email, password, account_id, key, secret, data_ids, nrows, confirmed, add_date, free} # for regular users, omit username/password, automatically all data access
-# mongo.db.datasets
-# - {account_id, data_id, rows, creation_date, variables, metadata}
-# mongo.db.downloads
-# - {account_id, data_id, download_date}
-# mongo2.db[account_id]
-# - {data_id, data}
-
 def fix_periods(xx, method):
     if type(xx) is list:
         if type(xx[0]) is dict:
@@ -40,6 +31,14 @@ def fix_periods(xx, method):
         elif method=="out":
             return xx.replace(u'\u2024',u'.')
 
+def get_key():
+    key = request.headers.get('Authorization',None)
+    if key is not None:
+        key = key.split(" ")[1]
+    else:
+        key = request.args.get('key',None)
+    return key
+
 @app.route('/v1')
 @app.route('/')
 def nothing_here():
@@ -53,22 +52,10 @@ def get_account(account_id):
     # simple account authorization test
     return jsonify("Success! Get APIin'!")
 
-# Add options for api_key in the query, not just the header...
-def get_key():
-    key = request.headers.get('Authorization',None)
-    if key is not None:
-        key = key.split(" ")[1]
-    else:
-        key = request.args.get('key',None)
-    return key
-
-
 @app.route('/v1/<account_id>/data', methods=['GET'])
 def check_data(account_id):
-    # if GET, get list of data_id, variables, nrows, creation date, metadata
     #key = request.headers.get('Authorization').split(" ")[1]
     key = get_key()
-
     user = mongo.db.users.find_one({'account_id':account_id, 'key':key})
     if user is None:
         abort(400)
@@ -91,7 +78,7 @@ def add_data(account_id):
         jwt.decode(key, admin_user['secret'])
     except:
         return jsonify(error="Your authorization token is invalid or expired.")
-    data = fix_periods(request.json['data'], "in")
+    data = request.json['data']
     rows = len(data)
     data_id = fix_periods(request.json['data_id'], "in") # this should already be done, but just for safety
     if rows == 0:
@@ -106,6 +93,8 @@ def add_data(account_id):
         private = False
     creation_date = datetime.utcnow()
     variables = request.json['variables']
+    if any(u"." in v for variables):
+        data = fix_periods(data, "in")
     metadata = request.json.get('metadata',None)
     data = mongo2.db[account_id].insert_one({'data_id':data_id, 'data':data})
     mongo.db.datasets.insert_one({'account_id': account_id,
@@ -121,11 +110,6 @@ def query_data(account_id, data_id):
     # check credentials
     dataset = mongo.db.datasets.find_one({'account_id':account_id, 'data_id':data_id})
     if dataset['private']: # if private is true, check credentials
-        # key = request.headers.get('Authorization',None)
-        # if key is not None:
-        #     key = key.split(" ")[1]
-        # else:
-        #     key = request.args.get('key',None)
         key = get_key()
         if key is None:
             return jsonify(error="Please supply an api key.")
@@ -133,7 +117,9 @@ def query_data(account_id, data_id):
         if user is None or data_id not in user['data_ids']:
             return jsonify(error="Your authorization key is invalid for this data.")
     data = mongo2.db[account_id].find_one({'data_id':data_id})
-    dataout = fix_periods(data['data'], "out")
+    dataout = data['data']
+    if any(u"." in v for dataset['variables']):
+        dataout = fix_periods(dataout, "out")
     metadata = dataset['metadata']
     return jsonify(data_id=data_id, data=dataout, metadata=metadata)
 
