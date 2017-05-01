@@ -5,3 +5,6 @@
 local.py
 config*
 *.pyc
+*.ini
+*wsgi.py
+biomeenv/*
