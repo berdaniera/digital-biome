@@ -93,7 +93,7 @@ def add_data(account_id):
         private = False
     creation_date = datetime.utcnow()
     variables = request.json['variables']
-    if any(u"." in v for variables):
+    if any(u"." in v for v in variables):
         data = fix_periods(data, "in")
     metadata = request.json.get('metadata',None)
     data = mongo2.db[account_id].insert_one({'data_id':data_id, 'data':data})
@@ -118,7 +118,7 @@ def query_data(account_id, data_id):
             return jsonify(error="Your authorization key is invalid for this data.")
     data = mongo2.db[account_id].find_one({'data_id':data_id})
     dataout = data['data']
-    if any(u"." in v for dataset['variables']):
+    if any(u"." in v for v in dataset['variables']):
         dataout = fix_periods(dataout, "out")
     metadata = dataset['metadata']
     return jsonify(data_id=data_id, data=dataout, metadata=metadata)
