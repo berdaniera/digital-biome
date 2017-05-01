@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="row"><div class="container 50%">
+
+  <form action="" method=post>
+    <h2>Sign up</h2>
+    <div class="12u$">
+      <input type="text" id="name" name="name" placeholder="Your name" required>
+    </div><br>
+    <div class="12u$">
+      <input type="text" id="email" name="email" placeholder="Email address (e.g., your@email.com)" required>
+    </div><br>
+    <div class="12u$">
+      <input type="text" id="account_id" name="account_id" placeholder="Account ID / username" required>
+    </div><br>
+    <div class="12u$">
+      <input type="password" id="password" name="password" placeholder="Password" required>
+    </div><br>
+    <div class="12u$">
+      <input value="Get started" class="button alt fit" type="submit">
+    </div>
+  </form>
+</div></div>
+
+{% endblock %}

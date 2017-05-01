@@ -1,21 +1,238 @@
-{% extends "indexlayout.html" %}
+<!DOCTYPE html>
+<!--
+	Transit by TEMPLATED
+	templated.co @templatedco
+	Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
+-->
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Digital Biome</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		<!--[if lte IE 8]><script src="static/js/html5shiv.js"></script><![endif]-->
+		<script src="/static/js/jquery.min.js"></script>
+		<script src="/static/js/skel.min.js"></script>
+		<script src="/static/js/skel-layers.min.js"></script>
+		<script src="/static/js/init.js"></script>
+		<noscript>
+			<link rel="stylesheet" type="text/css" href="/static/css/skel.css" />
+			<link rel="stylesheet" type="text/css" href="/static/css/style.css" />
+			<link rel="stylesheet" type="text/css" href="/static/css/style-xlarge.css" />
+		</noscript>
+	</head>
+	<body class="landing">
 
-{% block body %}
-<div class="col-md-8">
-<h2>Earth and environmental data management, simplified.</h2>
-<p class="lead">Your data are the core of your research. We help you move from data collection to data analysis faster. Digital Biome gives you cloud hosting and data integration, visualization and cleaning tools, and shared analysis workflows. <b>Get invited to be a beta tester today:</b></p>
-  <script type="text/javascript">var submitted=false;</script>
-  <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(submitted) {window.location='#'; document.getElementById('formemail').disabled='disabled';  $('#forme1').addClass('disabled');}"></iframe>
-  <form action="https://docs.google.com/forms/d/e/1FAIpQLSeztuRvYXY4NX222kGFXIPulzp2DoDftOMuVoAhZV5YHC4oLQ/formResponse?embedded=true" method="post" target="hidden_iframe" onsubmit="submitted=true;">
-  <div class="input-group input-group-lg">
-    <input type="text" id="formemail" name="entry.1535142446" class="form-control" placeholder="Enter your email address">
-    <span class="input-group-btn">
-      <button class="btn btn-default" id="forme1" type="submit"><font style="color:#2C3E50;font-weight:bold;"><span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span> Get Started</font></button>
-    </span>
-  </div><!-- /input-group -->
-  </form>
-  <br><br>
-  <a href="/admin" class="btn btn-success btn-lg">Try a Demo <span class="glyphicon glyphicon-menu-right" aria-hidden="true"></span></a>
-</div>
+		<!-- Header -->
+			<header id="header">
+				<h1><a href="/">Digital Biome</a></h1>
+				<nav id="nav">
+					<ul>
+						<li><a href="#one">Features</a></li>
+						<!-- <li><a href="#two">Prices</a></li> -->
+						{% if g.user.is_authenticated %}
+						<li><a href="{{ url_for('admin') }}">Admin</a></li>
+						<li><a href="{{ url_for('logout') }}" class="button special">Logout</a></li>
+						{% endif %}
+						{% if not g.user.is_authenticated %}
+						<li><a href="{{ url_for('login') }}" class="button special">Login</a></li>
+						{% endif %}
+					</ul>
+				</nav>
+			</header>
 
-{% endblock %}
+		<!-- Banner -->
+			<section id="banner">
+				<h2>An API for your data</h2>
+				<p>Connect and share data with your workspaces, your colleagues, and your applications.</p>
+					<div class="container 50%">
+						<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(submitted) {window.location='#'; document.getElementById('formemail').disabled='disabled';  $('#forme1').addClass('disabled');}"></iframe>
+						<form action="https://docs.google.com/forms/d/e/1FAIpQLSeztuRvYXY4NX222kGFXIPulzp2DoDftOMuVoAhZV5YHC4oLQ/formResponse?embedded=true" method="post" target="hidden_iframe" onsubmit="submitted=true;">
+							<div class="row uniform">
+								<div class="6u 12u$(small)">
+									<input style="background-color: #fff;color: #444;" id="formemail" name="entry.1535142446" value="" placeholder="Email address" type="text">
+								</div>
+								<div class="6u 12u$(small)">
+									<ul class="actions">
+										<li><input value="Sign up to be a beta tester" class="button" id="forme1" type="submit"></li>
+									</ul>
+								</div>
+							</div>
+						</form>
+					</div>
+
+
+			</section>
+
+		<!-- One -->
+			<section id="one" class="wrapper style1 special">
+				<div class="container">
+					<header class="major">
+						<h2>Simplify data sharing</h2>
+						<p>Digital Biome is an API-first data sharing platform built for data scientists.<br>
+							We give you an easy interface to open your data up to the world.</p>
+					</header>
+					<div class="row 150%">
+						<div class="4u 12u$(medium)">
+							<section class="box">
+								<i class="icon big rounded color6 fa-desktop"></i>
+								<h3>Access</h3>
+								<p>Add and retrieve data frames from anywhere. You can use our open Python and R libraries to access your data in your scripts. Or, create your own interface&mdash;our system is fully RESTful.</p>
+							</section>
+						</div>
+						<div class="4u 12u$(medium)">
+							<section class="box">
+								<i class="icon big rounded color1 fa-users"></i>
+								<h3>Share</h3>
+								<p>Data sharing is as easy as copying a line of code. You can manage access keys programmatically or with our online interface and control who has access to which data.</p>
+							</section>
+						</div>
+						<div class="4u$ 12u$(medium)">
+							<section class="box">
+								<i class="icon big rounded color9 fa-rocket"></i>
+								<h3>Collaborate</h3>
+								<p>Give collaborators seamless access to your up-to-date data, whether you are working with other people or building a web app with Django, Flask, or Shiny.</p>
+							</section>
+						</div>
+					</div>
+				</div>
+			</section>
+
+		<!-- Two
+			<section id="two" class="wrapper">
+				<div class="container">
+					<header class="major">
+						<h2>Easy pricing</h2>
+						<p>Digital Biome is billed monthly and priced by the amount of data. You only get charged for what you use and you can check your account status at any time.</p>
+					</header>
+					<section class="profiles">
+						<div class="container 75%"><div class="row">
+							<section>
+							<h2>$10 per 1 million data rows per month</h2>
+							<p>We give you unlimited data projects and bill you for the number of rows that you store.
+								We calculate the <b>median daily row number</b> for your account and charge you per million rows (or part) per month.
+								You can add or delete data at any time.</p>
+							<p><b>Unlimited access keys:</b> We give you one master public-secret key pair that you can use to add new data and make new keys.
+								Your master public API key automatically has read permissions for all data.
+								You can add and delete access keys whenever you want with read access for specific private data projects that you define.
+								<i>If you make your data public, anyone can access it without an API key.</i></p>
+							<hr>
+							</section>
+						</div></div>
+					</section>
+				</div>
+			</section>
+-->
+
+			<!-- <footer>
+				<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quibusdam dolore illum, temporibus veritatis eligendi, aliquam, dolor enim itaque veniam aut eaque sequi qui quia vitae pariatur repudiandae ab dignissimos ex!</p>
+				<ul class="actions">
+					<li>
+						<a href="#" class="button big">Lorem ipsum dolor sit</a>
+					</li>
+				</ul>
+			</footer> -->
+
+		<!-- Three -->
+			<section id="three" class="wrapper style3 special">
+				<div class="container">
+					<header class="major">
+						<h2>Sign up to be a beta tester</h2>
+						<p>We're still beta testing and we want your help! Sign up and we'll get in touch to talk about a sweet discount.</p>
+					</header>
+				</div>
+				<div class="container 50%">
+					<iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="if(submitted) {window.location='#'; document.getElementById('formemail').disabled='disabled';  $('#forme1').addClass('disabled');}"></iframe>
+					<form action="https://docs.google.com/forms/d/e/1FAIpQLSeztuRvYXY4NX222kGFXIPulzp2DoDftOMuVoAhZV5YHC4oLQ/formResponse?embedded=true" method="post" target="hidden_iframe" onsubmit="submitted=true;">
+						<div class="row uniform">
+							<div class="6u 12u$(small)">
+								<input id="formemail" name="entry.1535142446" value="" placeholder="Email address" type="text">
+							</div>
+							<div class="6u 12u$(small)">
+								<ul class="actions">
+									<li><input value="Get started" id="forme1" class="special" type="submit"></li>
+								</ul>
+							</div>
+						</div>
+					</form>
+				</div>
+			</section>
+
+		<!-- Footer -->
+			<footer id="footer">
+				<div class="container">
+					<!-- <section class="links">
+						<div class="row">
+							<section class="3u 6u(medium) 12u$(small)">
+								<h3>Lorem ipsum dolor</h3>
+								<ul class="unstyled">
+									<li><a href="#">Lorem ipsum dolor sit</a></li>
+									<li><a href="#">Nesciunt itaque, alias possimus</a></li>
+									<li><a href="#">Optio rerum beatae autem</a></li>
+									<li><a href="#">Nostrum nemo dolorum facilis</a></li>
+									<li><a href="#">Quo fugit dolor totam</a></li>
+								</ul>
+							</section>
+							<section class="3u 6u$(medium) 12u$(small)">
+								<h3>Culpa quia, nesciunt</h3>
+								<ul class="unstyled">
+									<li><a href="#">Lorem ipsum dolor sit</a></li>
+									<li><a href="#">Reiciendis dicta laboriosam enim</a></li>
+									<li><a href="#">Corporis, non aut rerum</a></li>
+									<li><a href="#">Laboriosam nulla voluptas, harum</a></li>
+									<li><a href="#">Facere eligendi, inventore dolor</a></li>
+								</ul>
+							</section>
+							<section class="3u 6u(medium) 12u$(small)">
+								<h3>Neque, dolore, facere</h3>
+								<ul class="unstyled">
+									<li><a href="#">Lorem ipsum dolor sit</a></li>
+									<li><a href="#">Distinctio, inventore quidem nesciunt</a></li>
+									<li><a href="#">Explicabo inventore itaque autem</a></li>
+									<li><a href="#">Aperiam harum, sint quibusdam</a></li>
+									<li><a href="#">Labore excepturi assumenda</a></li>
+								</ul>
+							</section>
+							<section class="3u$ 6u$(medium) 12u$(small)">
+								<h3>Illum, tempori, saepe</h3>
+								<ul class="unstyled">
+									<li><a href="#">Lorem ipsum dolor sit</a></li>
+									<li><a href="#">Recusandae, culpa necessita nam</a></li>
+									<li><a href="#">Cupiditate, debitis adipisci blandi</a></li>
+									<li><a href="#">Tempore nam, enim quia</a></li>
+									<li><a href="#">Explicabo molestiae dolor labore</a></li>
+								</ul>
+							</section>
+						</div>
+					</section> -->
+					<div class="row">
+						<div class="8u 12u$(medium)">
+							<ul class="copyright">
+								<li>&copy; 2017 Digital Biome. All rights reserved.</li>
+								<li>Design: <a href="http://templated.co">TEMPLATED</a></li>
+								<li>Images: <a href="http://unsplash.com">Unsplash</a></li>
+							</ul>
+						</div>
+						<div class="4u$ 12u$(medium)">
+							<!-- <ul class="icons">
+								<li>
+									<a class="icon rounded fa-facebook"><span class="label">Facebook</span></a>
+								</li>
+								<li>
+									<a class="icon rounded fa-twitter"><span class="label">Twitter</span></a>
+								</li>
+								<li>
+									<a class="icon rounded fa-google-plus"><span class="label">Google+</span></a>
+								</li>
+								<li>
+									<a class="icon rounded fa-linkedin"><span class="label">LinkedIn</span></a>
+								</li>
+							</ul> -->
+						</div>
+					</div>
+				</div>
+			</footer>
+
+	</body>
+</html>

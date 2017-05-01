@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="row"><div class="container 50%">
+
+  <form action="" method=post>
+    <!-- <div class="text-right"><a href="register">New? Register here.</a></div> -->
+    <h2>Sign In</h2>
+    <div class="12u$">
+      <input type="text" id="username" name="account_id" placeholder="Enter account id" required>
+    </div><br>
+    <div class="12u$">
+      <input type="password" id="password" name="password" placeholder="Enter password" required>
+    </div><br>
+    <input value="Login" class="button alt fit" type="submit">
+  </form>
+
+</div></div>
+{% endblock %}

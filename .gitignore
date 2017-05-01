@@ -2,6 +2,6 @@
 *.csv
 *.txt
 *.dat
+local.py
 config*
 *.pyc
-testfolder/

@@ -1,98 +1,149 @@
 <!DOCTYPE html>
+<!--
+	Transit by TEMPLATED
+	templated.co @templatedco
+	Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
+-->
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="">
-  <meta name="author" content="">
-  <title>Digital Biome</title>
-  <!-- jquery -->
-  <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
-  <!-- Latest compiled and minified CSS -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-  <!-- Latest compiled and minified JavaScript -->
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-  <!-- fontawesome -->
-  <script src="https://use.fontawesome.com/7cd26e4f50.js"></script>
-  <!-- d3 -->
-  <script src="https://d3js.org/d3.v4.min.js"></script>
-  <!-- Bootstrap Daterangepicker -->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
-  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
-  <!-- selectize.js -->
-  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/js/standalone/selectize.js"></script>
-  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.4/css/selectize.css" />
-  <!-- our stylesheet -->
-  <link rel="stylesheet" type="text/css" href="/static/css/digitalbiome.css" />
-  {% block head %}
-  {% endblock %}
-</head>
-<body>
+	<head>
+		<meta charset="UTF-8">
+		<title>Digital Biome</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		<!--[if lte IE 8]><script src="static/js/html5shiv.js"></script><![endif]-->
+		<script src="{{ url_for('static', filename='js/jquery.min.js')}}"></script>
+		<script src="{{ url_for('static', filename='js/skel.min.js')}}"></script>
+		<script src="{{ url_for('static', filename='js/skel-layers.min.js')}}"></script>
+		<script src="{{ url_for('static', filename='js/init.js')}}"></script>
+		<noscript>
+			<link rel="stylesheet" href="{{ url_for('static', filename='css/skel.css')}}" />
+			<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}" />
+			<link rel="stylesheet" href="{{ url_for('static', filename='css/style-xlarge.css')}}" />
+		</noscript>
+	</head>
+	<body>
 
-<nav class="navbar navbar-default navbar-fixed-top">
-  <div class="container">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="/">Digital Biome</a>
-    </div>
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-      <ul class="nav navbar-nav">
-        <li class="text-center"><a href="upload">Upload</a> </li>
-        <li class="text-center"><a href="clean">Clean</a> </li>
-        <li class="text-center"><a href="graph">Graph</a> </li>
-        <li class="text-center"><a href="download">Download</a> </li>
-        <li class="text-center"><a href="connect">Connect</a> </li>
-      </ul>
-      <ul class="nav navbar-nav navbar-right">
-        <li class="dropdown">
-          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-lg fa-cog" aria-hidden="true" aria-label="Settings"></i></a>
-          <ul class="dropdown-menu">
-            <li class="dropdown-header">Signed in as<br><b>demouser</b></li>
-            <li role="separator" class="divider"></li>
-            <li><a href="{{ url_for('admin') }}">Admin</a></li>
-            <li><a>Logout</a></li>
-          </ul>
-        </li>
-      </ul>
-    </div><!-- /.navbar-collapse -->
-  </div><!-- /.container-fluid -->
-</nav>
+		<!-- Header -->
+		<header id="header">
+			<h1><a href="/">Digital Biome</a></h1>
+			<nav id="nav">
+				<ul>
+					{% if g.user.is_authenticated %}
+					<!-- <li><a href="{{ url_for('admin') }}">Admin</a></li> -->
+					<li><a href="{{ url_for('logout') }}" class="button special">Logout</a></li>
+					{% endif %}
+					{% if not g.user.is_authenticated %}
+					<li><a href="{{ url_for('login') }}" class="button special">Login</a></li>
+					{% endif %}
+				</ul>
+			</nav>
+		</header>
 
-<div class="container">
-  <div id="alerts">
-  {% block alert %}
-  {% endblock %}
-  {% with messages = get_flashed_messages(with_categories=True) %}
-  {% if messages %}
-    {% for category, message in messages %}
-    <div class="alert alert-dismissible {{category}}">
-      <button class="close" data-dismiss="alert" aria-label="close">&times;</button>
-      {{ message }}
-    </div>
-    {% endfor %}
-  {% endif %}
-  {% endwith %}
-  </div>
+		<!-- Main -->
+			<section id="main" class="wrapper">
+				<div class="container">
 
-  {% block body %}
-  {% endblock %}
-</div>
+					<div id="alerts">
+				  {% block alert %}
+				  {% endblock %}
+				  {% with messages = get_flashed_messages(with_categories=True) %}
+				  {% if messages %}
+				    {% for category, message in messages %}
+				    <div class="alert alert-dismissible {{category}}">
+				      <!-- <button class="close" data-dismiss="alert" aria-label="close">&times;</button> -->
+				      {{ message }}
+				    </div>
+				    {% endfor %}
+				  {% endif %}
+				  {% endwith %}
+				  </div>
 
-<nav class="navbar navbar-bottom">
-  <div class="container text-right">
-    <br><hr>
-    <p style="color:#cccccc;"><small><span class="glyphicon glyphicon-stats" aria-hidden="true"></span> Powered by <a href="http://digitalbiome.io" style="color:#cccccc;">Digital Biome</a></small></p>
-  </div>
-</nav>
 
-</body>
+					{% block body %}
+					{% endblock %}
+
+				</div>
+			</section>
+
+<footer><div class="container">
+<p style="color:#cccccc;"><small>&copy; 2017 Digital Biome.</small></p>
+</div></footer>
+
+			<!-- Footer  <span class="fa fa-signal" aria-hidden="true"></span> Powered by <a href="http://digitalbiome.io" style="color:#cccccc;">Digital Biome</a>
+				<footer id="footer">
+					<div class="container">
+						<section class="links">
+							<div class="row">
+								<section class="3u 6u(medium) 12u$(small)">
+									<h3>Lorem ipsum dolor</h3>
+									<ul class="unstyled">
+										<li><a href="#">Lorem ipsum dolor sit</a></li>
+										<li><a href="#">Nesciunt itaque, alias possimus</a></li>
+										<li><a href="#">Optio rerum beatae autem</a></li>
+										<li><a href="#">Nostrum nemo dolorum facilis</a></li>
+										<li><a href="#">Quo fugit dolor totam</a></li>
+									</ul>
+								</section>
+								<section class="3u 6u$(medium) 12u$(small)">
+									<h3>Culpa quia, nesciunt</h3>
+									<ul class="unstyled">
+										<li><a href="#">Lorem ipsum dolor sit</a></li>
+										<li><a href="#">Reiciendis dicta laboriosam enim</a></li>
+										<li><a href="#">Corporis, non aut rerum</a></li>
+										<li><a href="#">Laboriosam nulla voluptas, harum</a></li>
+										<li><a href="#">Facere eligendi, inventore dolor</a></li>
+									</ul>
+								</section>
+								<section class="3u 6u(medium) 12u$(small)">
+									<h3>Neque, dolore, facere</h3>
+									<ul class="unstyled">
+										<li><a href="#">Lorem ipsum dolor sit</a></li>
+										<li><a href="#">Distinctio, inventore quidem nesciunt</a></li>
+										<li><a href="#">Explicabo inventore itaque autem</a></li>
+										<li><a href="#">Aperiam harum, sint quibusdam</a></li>
+										<li><a href="#">Labore excepturi assumenda</a></li>
+									</ul>
+								</section>
+								<section class="3u$ 6u$(medium) 12u$(small)">
+									<h3>Illum, tempori, saepe</h3>
+									<ul class="unstyled">
+										<li><a href="#">Lorem ipsum dolor sit</a></li>
+										<li><a href="#">Recusandae, culpa necessita nam</a></li>
+										<li><a href="#">Cupiditate, debitis adipisci blandi</a></li>
+										<li><a href="#">Tempore nam, enim quia</a></li>
+										<li><a href="#">Explicabo molestiae dolor labore</a></li>
+									</ul>
+								</section>
+							</div>
+						</section>
+					<div class="row">
+							<div class="8u 12u$(medium)">
+								<ul class="copyright">
+									<li>&copy; 2017 Digital Biome. All rights reserved.</li>
+									<li>Design: <a href="http://templated.co">TEMPLATED</a></li>
+									<li>Images: <a href="http://unsplash.com">Unsplash</a></li>
+								</ul>
+							</div>
+							<div class="4u$ 12u$(medium)">
+								<ul class="icons">
+									<li>
+										<a class="icon rounded fa-facebook"><span class="label">Facebook</span></a>
+									</li>
+									<li>
+										<a class="icon rounded fa-twitter"><span class="label">Twitter</span></a>
+									</li>
+									<li>
+										<a class="icon rounded fa-google-plus"><span class="label">Google+</span></a>
+									</li>
+									<li>
+										<a class="icon rounded fa-linkedin"><span class="label">LinkedIn</span></a>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</footer>
+ -->
+	</body>
 </html>

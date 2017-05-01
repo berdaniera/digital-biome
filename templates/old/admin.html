@@ -2,41 +2,39 @@
 
 {% block body %}
 
-<div class="row"><div class="container 75%">
+<div class="row"><div class="col-md-8 col-md-offset-2">
+<h1>Your keys</h1>
+<p class="lead">Share your data with your workstations, your colleagues, and your applications.</p>
 
-<h2>Your keys</h2>
+<p><span class="lead">Master api key: <code>{{key}}</code></span></p>
+<p><span class="lead">Master secret key: <code>{{secret}}</code></span></p>
 
-<h3>Master keys</h3>
-<p>Master api key: <code>{{key}}</code><br>
-Master secret key: <code>{{secret}}</code></p>
-
-<h3>Extra access keys</h3>
 <ul id="mykeys">
 {% for k in keys %}
 <li name="{{k.key}}"><code>{{k.key}}</code>
-  <a class="button small btn_refresh icon fa-refresh"> Regenerate</a>
-  <a class="button small btn_delete icon fa-trash"> Delete</a>
-  <br>Data IDs:<br>
+  <button type="button" class="btn btn-default btn-xs btn_refresh"><i class="fa fa-refresh"></i> Regenerate</button>
+  <button type="button" class="btn btn-default btn-xs btn_delete"><i class="fa fa-trash"></i> Delete</button>
+  <br>Data IDs:
     {% for d in all_data %}
       {% if d in k.data_ids %}
-        <input type="checkbox" id="{{k.key+d}}" name="{{d}}" checked> <label for="{{k.key+d}}">{{d}}</label>
+        <input type="checkbox" name="{{d}}" checked> {{d}}
       {% else %}
-        <input type="checkbox" id="{{k.key+d}}" name="{{d}}"> <label for="{{k.key+d}}">{{d}}</label>
+        <input type="checkbox" name="{{d}}"> {{d}}
       {% endif %}
     {% endfor %}
-    <a class="button small btn_updatepermissions icon fa-users"> Update permissions</a>
+    <button type="button" class="btn btn-default btn-xs btn_updatepermissions"><i class="fa fa-users"></i> Update permissions</button>
     <br><br>
 </li>
 {% endfor %}
 </ul>
 
-<h3>Add a new key</h3>
-<div id="ids_newkey">
+<button id="newkey" data-toggle="collapse" data-target="#ids_newkey" type="button" class="btn btn-link btn-xs"><i class="fa fa-space-shuttle"></i> Add a new key</button>
+<div id="ids_newkey" class="collapse">
   Select permissions:
   {% for d in all_data %}
-    <input type="checkbox" id="{{'newkey_'+d}}" name="{{d}}"> <label for="{{'newkey_'+d}}">{{d}}</label>
+    <input type="checkbox" name="{{d}}"> {{d}}
   {% endfor %}
-  <a id="addnewkey" class="button small"><i class="fa fa-rocket"></i> Create</a>
+  <button id="addnewkey" type="button" class="btn btn-default btn-xs">Create</button>
 </div>
 
 
@@ -55,17 +53,17 @@ function alertbox(alrt,msg){
 
 function displaykey(key, data_ids){
   first = '<li name="'+key+'"><code>'+key+'</code>\
-  <a class="button small btn_refresh icon fa-refresh"> Regenerate</a>\
-  <a class="button small btn_delete icon fa-trash"> Delete</a>\
-  <br>Data IDs:<br>'
+  <button type="button" class="btn btn-default btn-xs btn_refresh"><i class="fa fa-refresh"></i> Regenerate</button>\
+  <button type="button" class="btn btn-default btn-xs btn_delete"><i class="fa fa-trash"></i> Delete</button>\
+  <br>Data IDs:'
   second = all_data.map(function(d){
     if( $.inArray(d, data_ids)>=0 ){
-      return '<input type="checkbox" id="'+key+d+'" name="'+d+'" checked> <label for ="'+key+d+'">'+d+'</label>'
+      return '<input type="checkbox" name="'+d+'" checked> '+d
     }else{
-      return '<input type="checkbox" id="'+key+d+'" name="'+d+'"> <label for ="'+key+d+'">'+d+'</label>'
+      return '<input type="checkbox" name="'+d+'"> '+d
     }
   })
-  third = '<a class="button small btn_updatepermissions icon fa-users"> Update permissions</a><br><br></li>'
+  third = '<button type="button" class="btn btn-default btn-xs btn_updatepermissions"><i class="fa fa-users"></i> Update permissions</button></li><br>'
   return first + second.join(' ') + third
 }
 

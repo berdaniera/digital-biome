@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<div class="row"><div class="col-md-6 col-md-offset-3">
+  <form action="" method=post>
+    <h3>Sign up</h3>
+    <p class="lead">Subtitle</p>
+    <div class="form-group">
+      <input type="text" id="name" name="name" class="form-control"
+        placeholder="Your name" required>
+    </div>
+    <div class="form-group">
+      <input type="text" id="email" name="email" class="form-control"
+        placeholder="Email address (e.g., your@email.com)" required>
+    </div>
+    <div class="form-group">
+      <input type="text" id="account_id" name="account_id" class="form-control"
+        placeholder="Account ID / username" required>
+    </div>
+    <div class="form-group">
+      <input type="password" id="password" name="password" class="form-control"
+        placeholder="Password" required>
+    </div>
+    <div class="form-group">
+      <button type="submit" class="btn btn-primary btn-block">Register</button>
+    </div>
+  </form>
+</div></div>
+
+{% endblock %}
