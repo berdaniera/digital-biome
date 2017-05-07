@@ -12,31 +12,37 @@ Master secret key: <code>{{secret}}</code></p>
 
 <h3>Extra access keys</h3>
 <ul id="mykeys">
-{% for k in keys %}
-<li name="{{k.key}}"><code>{{k.key}}</code>
-  <a class="button small btn_refresh icon fa-refresh"> Regenerate</a>
-  <a class="button small btn_delete icon fa-trash"> Delete</a>
-  <br>Data IDs:<br>
-    {% for d in all_data %}
-      {% if d in k.data_ids %}
-        <input type="checkbox" id="{{k.key+d}}" name="{{d}}" checked> <label for="{{k.key+d}}">{{d}}</label>
-      {% else %}
-        <input type="checkbox" id="{{k.key+d}}" name="{{d}}"> <label for="{{k.key+d}}">{{d}}</label>
-      {% endif %}
-    {% endfor %}
-    <a class="button small btn_updatepermissions icon fa-users"> Update permissions</a>
-    <br><br>
-</li>
-{% endfor %}
+{% if len(keys)>0 %}
+  {% for k in keys %}
+  <li name="{{k.key}}"><code>{{k.key}}</code>
+    <a class="button small btn_refresh icon fa-refresh"> Regenerate</a>
+    <a class="button small btn_delete icon fa-trash"> Delete</a>
+    <br>Data IDs:<br>
+      {% for d in all_data %}
+        {% if d in k.data_ids %}
+          <input type="checkbox" id="{{k.key+d}}" name="{{d}}" checked> <label for="{{k.key+d}}">{{d}}</label>
+        {% else %}
+          <input type="checkbox" id="{{k.key+d}}" name="{{d}}"> <label for="{{k.key+d}}">{{d}}</label>
+        {% endif %}
+      {% endfor %}
+      <a class="button small btn_updatepermissions icon fa-users"> Update permissions</a>
+      <br><br>
+  </li>
+  {% endfor %}
+{% else %}
+  <i>No extra keys created yet.</i>
+{% endif %}
 </ul>
 
 <h3>Add a new key</h3>
 <div id="ids_newkey">
+{% if len(all_data)>0 %}
   Select permissions:
   {% for d in all_data %}
     <input type="checkbox" id="{{'newkey_'+d}}" name="{{d}}"> <label for="{{'newkey_'+d}}">{{d}}</label>
   {% endfor %}
   <a id="addnewkey" class="button small"><i class="fa fa-rocket"></i> Create</a>
+{% endif %}
 </div>
 
 

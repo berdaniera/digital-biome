@@ -46,11 +46,19 @@ def nothing_here():
 
 @app.route('/v1/<account_id>',methods=['GET'])
 def get_account(account_id):
-    user = mongo.db.users.find_one({'account_id':account_id})
-    if user is None:
-        abort(400)
-    # simple account authorization test
-    return jsonify("Success! Get APIin'!")
+    key = get_key()
+    if key is None:
+        # simple account authorization test
+        user = mongo.db.users.find_one({'account_id':account_id})
+        if user is None:
+            abort(400)
+        return jsonify("Account exists! Great work.")
+    else:
+        # add a check for authentication
+        user = mongo.db.users.find_one({'account_id':account_id, 'key':key})
+        if user is None:
+            abort(400)
+        return jsonify("Authentication success! Great work.")
 
 @app.route('/v1/<account_id>/data', methods=['GET'])
 def check_data(account_id):
