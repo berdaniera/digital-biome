@@ -160,10 +160,9 @@ def manage_keys(account_id):
         # print k
         return jsonify(keys=k)
     if request.method == 'POST':
-        print "creating keys"
         data_ids = request.json.get('data_id',[]) # if does not exist, will return empty list
-        return jsonify(id=data_ids,key=key)
-        # newkey = binascii.hexlify(os.urandom(10))
+        newkey = binascii.hexlify(os.urandom(10))
+        return jsonify(id=data_ids,key=newkey, timenow=datetime.utcnow())
         # mongo.db.users.insert_one({
         #     'account_id': account_id,
         #     'key': newkey,
