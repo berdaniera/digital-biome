@@ -5,6 +5,7 @@ from datetime import datetime
 import config as cfg
 from jose import jwt
 import binascii
+import os
 
 app = Flask(__name__)
 app.config['MONGO_DBNAME'] = cfg.MONGO_DBNAME
