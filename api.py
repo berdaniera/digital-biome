@@ -162,13 +162,14 @@ def manage_keys(account_id):
     if request.method == 'POST':
         print "creating keys"
         data_ids = request.json.get('data_id',[]) # if does not exist, will return empty list
-        newkey = binascii.hexlify(os.urandom(10))
-        mongo.db.users.insert_one({
-            'account_id': account_id,
-            'key': newkey,
-            'data_ids': data_ids,
-            'add_date': datetime.utcnow()})
-        return jsonify(key=newkey, data_ids=data_ids)
+        return jsonify(id=data_ids,key=key)
+        # newkey = binascii.hexlify(os.urandom(10))
+        # mongo.db.users.insert_one({
+        #     'account_id': account_id,
+        #     'key': newkey,
+        #     'data_ids': data_ids,
+        #     'add_date': datetime.utcnow()})
+        # return jsonify(key=newkey, data_ids=data_ids)
 
 @app.route('/v1/<account_id>/keys/<key>', methods=['DELETE'])
 def delete_key(account_id, key):
