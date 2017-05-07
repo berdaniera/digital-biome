@@ -4,6 +4,7 @@ from flask_compress import Compress
 from datetime import datetime
 import config as cfg
 from jose import jwt
+import binascii
 
 app = Flask(__name__)
 app.config['MONGO_DBNAME'] = cfg.MONGO_DBNAME
@@ -162,13 +163,13 @@ def manage_keys(account_id):
     if request.method == 'POST':
         data_ids = request.json.get('data_id',[]) # if does not exist, will return empty list
         newkey = binascii.hexlify(os.urandom(10))
-        return jsonify(id=data_ids,key=newkey, timenow=datetime.utcnow())
-        # mongo.db.users.insert_one({
-        #     'account_id': account_id,
-        #     'key': newkey,
-        #     'data_ids': data_ids,
-        #     'add_date': datetime.utcnow()})
-        # return jsonify(key=newkey, data_ids=data_ids)
+        creation_date = datetime.utcnow()
+        mongo.db.users.insert_one({
+            'account_id': account_id,
+            'key': newkey,
+            'data_ids': data_ids,
+            'add_date': creation_date})
+        return jsonify(key=newkey, data_ids=data_ids)
 
 @app.route('/v1/<account_id>/keys/<key>', methods=['DELETE'])
 def delete_key(account_id, key):
