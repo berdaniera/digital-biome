@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>Digital Biome</title>
+  <style>
+  .anchor {
+      padding-top: 65px;
+      margin-top: -65px;
+  }
+  pre{
+    height: auto;
+    max-height: 200px;
+    overflow: auto;
+  }
+  .cmt{color: #999999}
+  .rfn{color: #BF5700}
+  .obj{color: #4169E1}
+  .param{color: #FF1493}
+  </style>
+  <!-- jquery -->
+  <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+  <!-- Bootstrap -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+  <!-- fontawesome -->
+  <script src="https://use.fontawesome.com/7cd26e4f50.js"></script>
+</head>
+
+<body data-spy="scroll" data-target="#mynav" style="padding-top:65px;">
+  <nav class="navbar navbar-fixed-top navbar-inverse">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Digital Biome</a><span class="navbar-text">API DOCS</span>
+      </div>
+      <div id="navbar" class="collapse navbar-collapse">
+        <ul class="nav navbar-nav navbar-right">
+          <li class="active"><a data-toggle="tab" href="#" data-target="#c1,#c2,#c3,#c4,#c5,#c6">curl</a></li>
+          <li><a data-toggle="tab" href="#" data-target="#r1,#r2,#r3,#r4,#r5,#r6">R</a></li>
+          <li><a data-toggle="tab" href="#" data-target="#p1,#p2,#p3,#p4,#p5,#p6">Python</a></li>
+        </ul>
+      </div><!-- /.nav-collapse -->
+    </div><!-- /.container -->
+  </nav><!-- /.navbar -->
+
+
+<!-- &nbsp; <button type="button" class="btn btn-primary btn-xs" data-toggle="collapse" data-target="#mynav">Toggle menu</button> -->
+
+<!-- <div class="row"><ul class="nav nav-xs nav-tabs" data-spy="affix"></ul></div> -->
+
+<div class="container"><div class="row">
+
+  <p class="visible-xs" id="xs-check"></p>
+
+  <div class="col-xs-12 col-sm-2 collapse in" id="mynav">
+    <ul class="nav nav-pills nav-stacked" data-spy="affix">
+      <li role="presentation"><a href="#overview">Overview</a></li>
+      <li role="presentation"><a href="#auth">Authentication</a></li>
+      <li role="presentation"><a href="#keys">Keys</a></li>
+      <li role="presentation"><a href="#data">Data</a></li>
+      <li role="presentation"><a href="#errors">Errors</a></li>
+    </ul>
+  </div> <!-- side nav -->
+
+  <div class="col-sm-10" name="content">
+
+    <a name="overview"></a>
+    <div class="row anchor" id="overview">
+      <div class="col-md-12">
+        <h1>Overview</h1>
+        <p>Digital Biome APIs are RESTful and are processed with HTTPS.
+          The responses are always JSON and are compressed with gzip when possible.</p>
+        <p>R and Python SDKs make it super easy to interact with your API by automatically loading data as a data frame.</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6" name="desc">
+        <!-- Nothing here -->
+      </div><div class="col-md-6" name="code">
+        <!-- Nothing here -->
+      </div>
+    </div>
+
+   <hr>
+
+    <a name="auth"></a>
+    <div class="row anchor" id="auth">
+      <div class="col-md-12"><h1>Authentication</h1></div>
+    </div>
+    <div class="row">
+      <div class="col-md-6" name="desc">
+        <h3>Data download requests</h3>
+        <p>Data can be made public or private. If data are public, no authentication is required.
+          For private data, downloads are usually authenticated and authorized with Bearer Auth via a single API key.</p>
+        <p>You can also avoid the authorization header by passing <code>?key=your-api-key</code> as a parameter in the URL.</p>
+        <h3>Administrative requests</h3>
+        <p>Adding or modifying data or keys requires administrative access via the master API/Secret key pair.
+          This master key pair is used to generate a JSON Web Token, where the API key is hashed with the Secret key for security.
+          Then, this Token is passed to the server with Bearer Auth for authentication and authorization.
+          Each token is valid for a limited time.</p>
+        <p>The administrative tokens are generated automatically through the R and Python SDKs when you make an <code>add_</code> call, so you never actually need to create them on your own.
+          They can also be generated in the Admin panel of the website.</p>
+      </div><div class="col-md-6" name="code">
+        <!-- <ul class="nav nav-xs nav-tabs"></ul><br> -->
+        <div class="tab-content">
+          <p class="lead">To test your account</p>
+          <div id="c1" class="tab-pane active">
+<p>Example request:</p>
+<pre>
+curl https://api.digitalbiome.io/v1/<i class="param">account_id</i>
+ -H "Authorization: Bearer <i class="param">your-api-key</i>"
+</pre>
+  <p class="text-center"><i>or</i></p>
+<pre>
+curl https://api.digitalbiome.io/v1/<i class="param">account_id</i>?key=<i class="param">your-api-key</i>
+</pre>
+<p>Example response:</p>
+<pre>"Authentication success! Great work."</pre>
+          </div>
+          <div id="r1" class="tab-pane"></div>
+          <div id="p1" class="tab-pane">The Python SDK is not built yet. We're getting there...</div>
+        </div>
+      </div>
+    </div>
+
+  <hr>
+  <!-- ########## Keys ############# -->
+    <a name="keys"></a>
+    <div class="row anchor" id="keys">
+      <div class="col-md-12">
+        <h1>Keys</h1>
+        <p>A data set can have multiple valid API keys, and each API key can be attached to multiple data sets.
+          Additionally, keys can be revoked or edited at any time.</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6" name="desc">
+        <h3>Get list of keys</h3>
+        <p>This requires administrative access.</p>
+      </div><div class="col-md-6" name="code">
+        <!-- <ul class="nav nav-xs nav-tabs"></ul><br> -->
+        <div class="tab-content">
+          <div id="c2" class="tab-pane active">
+<p>Example request:</p>
+<pre>
+curl https://api.digitalbiome.io/v1/<i class="param">account_id</i>/keys
+ -H "Authorization: Bearer <i class="param">your-admin-token</i>"
+</pre>
+<p>Example response:</p>
+<pre>
+{
+  "keys": [
+    {
+      "add_date": "Sun, 30 Apr 2017 14:15:07 GMT",
+      "data_ids": [
+        "airports",
+        "airlines",
+        "routes"
+      ],
+      "free": false,
+      "key": "8aeb4db1465d",
+      "nrows": 81006
+    }
+  ]
+}
+</pre>
+          </div>
+          <div id="r2" class="tab-pane">
+<pre>
+> k <- get_keys("<i class="param">account_id</i>")
+> k$keys
+                       add_date                   data_ids  free          key nrows
+1 Sun, 30 Apr 2017 14:15:07 GMT airports, airlines, routes FALSE 8aeb4db1465d 81006
+</pre>
+<p>The <code>keys</code> object is a data frame with columns for add_date, data_ids (a list of associated data ids), free, key, nrows.</p>
+          </div>
+          <div id="p2" class="tab-pane">The Python SDK is not built yet. We're getting there...</div>
+        </div>
+      </div>
+    </div>
+
+  <hr>
+
+    <div class="row">
+      <div class="col-md-6" name="desc">
+        <h3>Create a key for a list of data sets</h3>
+        <p>This requires administrative access.</p>
+        <p>if the <code>data_ids</code> list is empty or the <code>-d</code> call is missing, this request will create a new key without any attached data sets.
+          The data set access for each key can be edited on the administrative dashboard.</p>
+      </div><div class="col-md-6" name="code">
+        <!-- <ul class="nav nav-xs nav-tabs"></ul><br> -->
+        <div class="tab-content">
+          <div id="c3" class="tab-pane active">
+<pre>
+curl https://api.digitalbiome.io/v1/<i class="param">account_id</i>/keys \
+ -H "Content-Type: application/json" \
+ -H "Authorization: Bearer <i class="param">your-admin-token</i>" \
+ -d '{"data_ids": ["<i class="param">your-data-ids</i>", "<i class="param">separated-by-commas</i>"]}'
+</pre>
+          </div>
+          <div id="r3" class="tab-pane">
+<pre>
+> k <- add_keys("<i class="param">account_id</i>")
+> k$keys
+                       add_date                   data_ids  free          key nrows
+1 Sun, 30 Apr 2017 14:15:07 GMT airports, airlines, routes FALSE 8aeb4db1465d 81006
+</pre>
+<p>The <code>keys</code> object is a data frame with columns for add_date, data_ids (a list of associated data ids), free, key, nrows.</p>
+          </div>
+          <div id="p3" class="tab-pane">The Python SDK is not built yet. We're getting there...</div>
+        </div>
+      </div>
+    </div>
+
+  <hr>
+
+    <div class="row">
+      <div class="col-md-6" name="desc">
+        <h3>Delete a key</h3>
+        <p>Not implemented yet, currently accessible on the administrative dashboard.</p>
+      </div><div class="col-md-6" name="code">
+        <!-- Nothing here -->
+      </div>
+    </div>
+
+  <hr>
+  <!-- ########## Data ############# -->
+    <a name="data"></a>
+    <div class="row anchor" id="data">
+
+      <div class="col-md-12"><h1>Data</h1></div>
+    </div>
+    <div class="row">
+      <div class="col-md-6" name="desc">
+        <h3>Get list of data sets</h3>
+        <p>A generic request to the data endpoint returns information about the <code>data_ids</code>, metadata, number of rows, and variables for each data set.</p>
+      </div><div class="col-md-6" name="code">
+        <!-- <ul class="nav nav-xs nav-tabs"></ul><br> -->
+        <div class="tab-content">
+          <div id="c4" class="tab-pane active">
+<p>Example request:</p>
+<pre>
+curl https://api.digitalbiome.io/v1/<i class="param">account_id</i>/data
+</pre>
+<p>Example response</p>
+<pre>
+{
+  "datasets": [
+    {
+      "creation_date": "Sun, 30 Apr 2017 14:16:53 GMT",
+      "data_id": "airports",
+      "metadata": "Source and metadata: http://openflights.org/data.html\nLicense: Data are available under the Open Database License: http://opendatacommons.org/licenses/odbl/1.0/",
+      "rows": 7183,
+      "variables": [
+        "AirportID",
+        "Name",
+        "City",
+        "Country",
+        "IATA",
+        "ICAO",
+        "Latitude",
+        "Longitude",
+        "Altitude",
+        "Timezone",
+        "DST",
+        "Tz",
+        "Type",
+        "Source"
+      ]
+    },
+    {
+      "creation_date": "Sun, 30 Apr 2017 14:16:56 GMT",
+      "data_id": "airlines",
+      "metadata": "Source and metadata: http://openflights.org/data.html\n License: Data are available under the Open Database License: http://opendatacommons.org/licenses/odbl/1.0/",
+      "rows": 6161,
+      "variables": [
+        "AirlineID",
+        "Name",
+        "Alias",
+        "IATA",
+        "ICAO",
+        "Callsign",
+        "Country",
+        "Active"
+      ]
+    }
+  ]
+}
+</pre>
+          </div>
+          <div id="r4" class="tab-pane">asdfR</div>
+          <div id="p4" class="tab-pane">The Python SDK is not built yet. We're getting there...</div>
+        </div>
+      </div>
+    </div>
+
+  <hr>
+
+    <div class="row">
+      <div class="col-md-6" name="desc">
+        <h3>Download data</h3>
+        <p>This is some description.</p>
+      </div><div class="col-md-6" name="code">
+        <!-- <ul class="nav nav-xs nav-tabs"></ul><br> -->
+        <div class="tab-content">
+          <div id="c5" class="tab-pane active">
+<pre>
+curl https://api.digitalbiome.io/v1/<i class="param">account_id</i>/data/<i class="param">data_id</i>
+ -H "Authorization: Bearer <i class="param">your-api-key</i>"
+</pre>
+          </div>
+          <div id="r5" class="tab-pane">asdfR</div>
+          <div id="p5" class="tab-pane">The Python SDK is not built yet. We're getting there...</div>
+        </div>
+      </div>
+    </div>
+  <hr>
+    <div class="row">
+      <div class="col-md-6" name="desc">
+        <h3>Add data to your account</h3>
+        <p>This is some description.</p>
+      </div><div class="col-md-6" name="code">
+        <!-- <ul class="nav nav-xs nav-tabs"></ul><br> -->
+        <div class="tab-content">
+          <div id="c6" class="tab-pane active">
+<pre>
+curl -X POST https://api.digitalbiome.io/v1/<i class="param">account_id</i>/data
+ -H "Content-Type: application/json"
+ -H "Authorization: Bearer <i class="param">your-admin-token</i>"
+ -d '{<i class="param">your-json-data</i>}'
+</pre>
+          </div>
+          <div id="r6" class="tab-pane">asdfR</div>
+          <div id="p6" class="tab-pane">The Python SDK is not built yet. We're getting there...</div>
+        </div>
+      </div>
+    </div>
+  <hr>
+    <div class="row">
+      <div class="col-md-6" name="desc">
+        <h3>Replace a data set</h3>
+        <p>Not implemented yet, currently accessible on the administrative dashboard.</p>
+      </div><div class="col-md-6" name="code">
+        <!-- Nothing here -->
+      </div>
+    </div>
+  <hr>
+    <div class="row">
+      <div class="col-md-6" name="desc">
+        <h3>Delete a data set</h3>
+        <p>Not implemented yet, currently accessible on the administrative dashboard.</p>
+      </div><div class="col-md-6" name="code">
+        <!-- Nothing here -->
+      </div>
+    </div>
+
+  <hr>
+
+    <a name="errors"></a>
+    <div class="row anchor" id="errors">
+      <div class="col-md-12"><h1>Errors</h1></div>
+    </div>
+    <div class="row">
+      <div class="col-md-6" name="desc">
+        <p>The API returns a HTTP 400 error if a call is invalid.
+          For errors with authorization or validation, the call will return a JSON object with some information about resolving the error.</p>
+      </div><div class="col-md-6" name="code">
+        Example response:<br>
+<pre>
+{
+  "error": "Some description of the problem."
+}
+</pre>
+      </div>
+    </div>
+
+    <!-- <a name="errors"></a>
+    <div class="row" id="errors">
+      <h1>Errors</h1>
+      <div class="row"><div class="col-md-6" name="desc">
+        <h1>asdf</h1>
+        <p>This is some description of what is going on</p>
+      </div><div class="col-md-6" name="code">
+        <ul class="nav nav-xs nav-tabs"></ul><br>
+        <div class="tab-content col-md-12">
+          <div id="c1" class="tab-pane active">
+  <pre>
+  curl https://api.digitalbiome.io/v1/account_id/keys
+   -H "Content-Type: application/json"
+   -H "Authorization: Bearer your-admin-token"
+   -d '{"data_ids":["your-data-ids", "separated-by-commas"]}'
+  </pre>
+          </div>
+          <div id="r1" class="tab-pane">asdfR</div>
+          <div id="p1" class="tab-pane">The Python SDK is not built yet. We're getting there...</div>
+        </div>
+      </div></div>
+    </div> -->
+
+    <br><br>
+
+  </div><!-- /content -->
+</div></div><!-- /.container and row -->
+
+<script>
+$(document).ready(function () {
+//   var navtabs = '<li class="active"><a data-toggle="tab" href="#c1" data-target="#c1,#c2,#c3,#c4,#c5,#c6">curl</a></li>\
+// <li><a data-toggle="tab" href="#r1" data-target="#r1,#r2,#r3,#r4,#r5,#r6">R</a></li>\
+// <li><a data-toggle="tab" href="#p1" data-target="#p1,#p2,#p3,#p4,#p5,#p6">Python</a></li>'
+//   $(".nav-tabs").append(navtabs);
+
+  if($("#xs-check").is(":visible")) $("#mynav").removeClass("in")
+  $(window).on('resize', function(){
+    if($("#xs-check").is(":visible")){
+      $("#mynav").removeClass("in")
+    }else{
+      if(!$("#mynav").hasClass("in")) $("#mynav").addClass("in")
+    }
+  })
+});
+</script>
+
+</body>
+</html>
